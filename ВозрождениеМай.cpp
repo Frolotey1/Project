@@ -6,11 +6,6 @@
 #include <sstream>
 #include <string>
 
-const std::string ANSI = "\001b",
-    RED = ANSI + "[31m",
-    GREEN = ANSI + "[32m",
-    RESET = ANSI + "[0m";
-
 // Проект middle магазин
 
 // 1) 10 видов товара. Айди, название, цена, кол-во
@@ -294,13 +289,14 @@ void storage() {
         std::cerr << "Такого пользователя с таким логином не существует" << std::endl;
         menu(1);
     }
+    std::string _id = "", _price = "", operation = "";
     std::cout << "Выберите операцию по работе с товарами: \n";
     std::cin >> operation;
     if (std::stoi(operation) == 1) {
         std::cout << "Напишите id товара для изменения цены: \n";
         std::cin >> _id;
         if (std::stoi(_id) < 1 || std::stoi(_id) > id.size()) {
-            std::cerr << RED << "Ошибка. Товара с таким id не существует. Повторите еще раз" << RESET << std::endl;
+            std::cerr << "Ошибка. Товара с таким id не существует. Повторите еще раз" << std::endl;
             storage();
         }
         else {
@@ -400,7 +396,7 @@ void storage() {
         std::cout << "Напишите новое название товара:\n";
         std::cin >> newNameProduct;
         if (std::isalpha(newNameProduct.at(0),std::locale(""))) {
-            std::cerr << RED << "Ошибка наименования товара. Попробуйте еще раз" << RESET << std::endl;
+            std::cerr << "Ошибка наименования товара. Попробуйте еще раз" << std::endl;
             storage();
         }
         std::cout << "Напишите количество нового товара:\n";
