@@ -34,12 +34,12 @@ void menu(short attempt);
 void registry(short attempt);
 
 
-size_t count_sales = 0; double earned_money = 0.0;
+size_t count_sales = 0, count_changed_storage_times = 0; double earned_money = 0.0;
 std::string client;
 std::vector<std::string> loginNames,
-passwords,
-userRights{ "Супер-администратор","Администратор","Сотрудник" },
-rights;
+    passwords,
+    userRights{ "Супер-администратор","Администратор","Сотрудник" },
+    rights;
 std::vector<std::size_t> id{ 1,2,3,4,5,6,7,8,9,10 }, count{ 4,6,5,2,1,8,9,10,3,7 };
 std::vector<double> price{ 49.0,56.0,44.0,45.0,39.0,42.0,55.9,59.0,30.0,50.0 };
 std::vector<std::string> productName{
@@ -56,6 +56,8 @@ std::vector<std::string> productName{
 };
 std::vector<std::size_t> id_from_acceptance{ 0 }, count_from_acceptance{ 0 };
 std::vector<std::string> product_from_acceptance{ "" }; std::vector<double> price_from_acceptance{ 0.0 };
+std::vector<std::string> saled_products; std::vector<double> result_saled_products;
+std::vector<std::size_t> result_count_products;
 
 void registry(short attempt) {
     if (attempt >= 10) {
@@ -126,7 +128,7 @@ void login(short attempt) {
         auto find_password = std::find(passwords.begin(), passwords.end(), password);
         if (find_loginName != loginNames.end() || find_password != passwords.end()) {
             std::cout << "Пользователь " << loginNames[std::distance(from_first_name_user, find_loginName)]
-                << " успешно вошел в систему" << std::endl;
+                      << " успешно вошел в систему" << std::endl;
             std::cout << "Ваш статус: " << rights[std::distance(from_first_name_user, find_loginName)] << "\n";
             menu(1);
         }
@@ -166,14 +168,104 @@ void accounts() {
     if (rights[std::distance(find_from_first, find_right)] == "Супер-администратор") {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
             std::cout << "Логин: " << loginNames[i] << " | " << "Пароль: " << passwords[i]
-                << " | " << "Права: " << rights[i] << std::endl;
+                      << " | " << "Права: " << rights[i] << std::endl;
+        }
+        std::string operation = "";
+        std::cout << "Что хотите изменить:\n";
+        std::cout << "1. Пароль\n";
+        std::cout << "2. Права\n";
+        std::cin >> operation;
+        if(std::stoi(operation) == 1) {
+            std::string user_login = "";
+            std::cout << "Напишите логин пользователя для изменения его пароля:\n";
+            std::cin >> user_login;
+            auto find_user_login = std::find(loginNames.begin(),loginNames.end(),user_login);
+            if(find_user_login == loginNames.end()) {
+                std::cout << "Такой пользователь не существует" << std::endl;
+            } else {
+                auto find_user_login_from_first =
+                    std::find(loginNames.begin(),loginNames.end(),loginNames.at(0));
+                std::string new_password = "";
+                std::cin >> new_password;
+                if(new_password.size() < 5) {
+                    std::cerr << "Пароль должен быть не менее 5 символов" << std::endl;
+                } else {
+                    passwords[std::distance(find_user_login_from_first,find_user_login)] = new_password;
+                    std::cout << "Пароль для пользователя '" << user_login << "' успешно изменен" << std::endl;
+                }
+            }
+        } else if(std::stoi(operation) == 2) {
+            std::string user_login = "";
+            std::cout << "Напишите логин пользователя для изменения его права:\n";
+            std::cin >> user_login;
+            auto find_user_login = std::find(loginNames.begin(),loginNames.end(),user_login);
+            if(find_user_login == loginNames.end()) {
+                std::cout << "Такой пользователь не существует" << std::endl;
+            } else {
+                auto find_user_login_from_first =
+                    std::find(loginNames.begin(),loginNames.end(),loginNames.at(0));
+                std::string new_right = "";
+                std::cin >> new_right;
+                auto exist_right = std::find(rights.begin(),rights.end(),new_right);
+                if(new_password.size() < 5 || exist_right == rights.end()) {
+                    std::cerr << "Пароль должен быть не менее 5 символов" << std::endl;
+                } else {
+                    rights[std::distance(find_user_login_from_first,find_user_login)] = new_right;
+                    std::cout << "Право для пользователя '" << user_login << "' успешно изменено" << std::endl;
+                }
+            }
         }
     }
     else if (rights[std::distance(find_from_first, find_right)] == "Администратор") {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
             if (rights[i] != "Супер-администратор") {
                 std::cout << "Логин: " << loginNames[i] << " | " << "Пароль: " << passwords[i]
-                    << " | " << "Права: " << rights[i] << std::endl;
+                          << " | " << "Права: " << rights[i] << std::endl;
+            }
+        }
+        std::string operation = "";
+        std::cout << "Что хотите изменить:\n";
+        std::cout << "1. Пароль\n";
+        std::cout << "2. Права\n";
+        std::cin >> operation;
+        if(std::stoi(operation) == 1) {
+            std::string user_login = "";
+            std::cout << "Напишите логин пользователя для изменения его пароля:\n";
+            std::cin >> user_login;
+            auto find_user_login = std::find(loginNames.begin(),loginNames.end(),user_login);
+            if(find_user_login == loginNames.end()) {
+                std::cout << "Такой пользователь не существует" << std::endl;
+            } else {
+                auto find_user_login_from_first =
+                    std::find(loginNames.begin(),loginNames.end(),loginNames.at(0));
+                std::string new_password = "";
+                std::cin >> new_password;
+                if(new_password.size() < 5) {
+                    std::cerr << "Пароль должен быть не менее 5 символов" << std::endl;
+                } else {
+                    passwords[std::distance(find_user_login_from_first,find_user_login)] = new_password;
+                    std::cout << "Пароль для пользователя '" << user_login << "' успешно изменен" << std::endl;
+                }
+            }
+        } else if(std::stoi(operation) == 2) {
+            std::string user_login = "";
+            std::cout << "Напишите логин пользователя для изменения его права:\n";
+            std::cin >> user_login;
+            auto find_user_login = std::find(loginNames.begin(),loginNames.end(),user_login);
+            if(find_user_login == loginNames.end()) {
+                std::cout << "Такой пользователь не существует" << std::endl;
+            } else {
+                auto find_user_login_from_first =
+                    std::find(loginNames.begin(),loginNames.end(),loginNames.at(0));
+                std::string new_right = "";
+                std::cin >> new_right;
+                auto exist_right = std::find(rights.begin(),rights.end(),new_right);
+                if(new_password.size() < 5 || exist_right == rights.end()) {
+                    std::cerr << "Пароль должен быть не менее 5 символов" << std::endl;
+                } else {
+                    rights[std::distance(find_user_login_from_first,find_user_login)] = new_right;
+                    std::cout << "Право для пользователя '" << user_login << "' успешно изменено" << std::endl;
+                }
             }
         }
     }
@@ -181,31 +273,115 @@ void accounts() {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
             if (rights[i] == "Сотрудник") {
                 std::cout << "Логин: " << loginNames[i] << " | " << "Пароль: " << passwords[i]
-                    << " | " << "Права: " << rights[i] << std::endl;
+                          << " | " << "Права: " << rights[i] << std::endl;
+            }
+        }
+        std::string operation = "";
+        std::cout << "Что хотите изменить:\n";
+        std::cout << "1. Пароль\n";
+        std::cout << "2. Права\n";
+        std::cin >> operation;
+        if(std::stoi(operation) == 1) {
+            std::string user_login = "";
+            std::cout << "Напишите логин пользователя для изменения его пароля:\n";
+            std::cin >> user_login;
+            auto find_user_login = std::find(loginNames.begin(),loginNames.end(),user_login);
+            if(find_user_login == loginNames.end()) {
+                std::cout << "Такой пользователь не существует" << std::endl;
+            } else {
+                auto find_user_login_from_first =
+                    std::find(loginNames.begin(),loginNames.end(),loginNames.at(0));
+                std::string new_password = "";
+                std::cin >> new_password;
+                if(new_password.size() < 5) {
+                    std::cerr << "Пароль должен быть не менее 5 символов" << std::endl;
+                } else {
+                    passwords[std::distance(find_user_login_from_first,find_user_login)] = new_password;
+                    std::cout << "Пароль для пользователя '" << user_login << "' успешно изменен" << std::endl;
+                }
+            }
+        } else if(std::stoi(operation) == 2) {
+            std::string user_login = "";
+            std::cout << "Напишите логин пользователя для изменения его права:\n";
+            std::cin >> user_login;
+            auto find_user_login = std::find(loginNames.begin(),loginNames.end(),user_login);
+            if(find_user_login == loginNames.end()) {
+                std::cout << "Такой пользователь не существует" << std::endl;
+            } else {
+                auto find_user_login_from_first =
+                    std::find(loginNames.begin(),loginNames.end(),loginNames.at(0));
+                std::string new_right = "";
+                std::cin >> new_right;
+                auto exist_right = std::find(rights.begin(),rights.end(),new_right);
+                if(new_password.size() < 5 || exist_right == rights.end()) {
+                    std::cerr << "Пароль должен быть не менее 5 символов" << std::endl;
+                } else {
+                    rights[std::distance(find_user_login_from_first,find_user_login)] = new_right;
+                    std::cout << "Право для пользователя '" << user_login << "' успешно изменено" << std::endl;
+                }
             }
         }
     }
 }
 
 void premium(std::string login, std::string right) {
-    std::cout << "Сотрудник '" << login << "' со статусом '" << right << "' получает вознаграждение в виде:\n";
-    std::cout << "1. Возможность подняться до статуса Администратора\n";
-    std::cout << "2. Возможность работать по графику 2/2 вместо 5/2\n";
     std::string up = "";
-    std::cout << "-----------------------------------------------------\n";
-    std::cout << "Хотите подняться до уровня Администратора - напишите 1\n";
-    std::cout << "Хотите остаться на том же уровне, но с другим графиком работы - напишите другую цифру\n";
-    std::cin >> up;
-    if (std::stoi(up) == 1) {
-        auto find_login = std::find(loginNames.begin(), loginNames.end(), login);
-        auto find = std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
-        rights[std::distance(find, find_login)] = "Администратор";
-        std::cout << "Сотрудник '" << login << "' был успешно поднят до статуса '" << rights[std::distance(find, find_login)] << "'.\nПоздравляем!";
-        storage();
-    }
-    else {
-        std::cout << "Возвращение в работу" << std::endl;
-        storage();
+    if(right == "Сотрудник") {
+        std::cout << login << " со статусом '" << right << "' получает вознаграждение в виде:\n";
+        std::cout << "1. Возможность подняться до статуса Администратора\n";
+        std::cout << "2. Возможность работать по графику 2/2 вместо 5/2\n";
+        std::cout << "-----------------------------------------------------\n";
+        std::cout << "Хотите подняться до уровня Администратора - напишите 1\n";
+        std::cout << "Хотите остаться на том же уровне, но с другим графиком работы - напишите другую цифру\n";
+        std::cin >> up;
+        if (std::stoi(up) == 1) {
+            auto find_login = std::find(loginNames.begin(), loginNames.end(), login);
+            auto find = std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
+            rights[std::distance(find, find_login)] = "Администратор";
+            std::cout << "Сотрудник '" << login << "' был успешно поднят до статуса '" << rights[std::distance(find, find_login)] << "'.\nПоздравляем!";
+            storage();
+        }
+        else {
+            std::cout << "Возвращение в работу" << std::endl;
+            storage();
+        }
+    } else if(right == "Администратор") {
+        std::cout << login << " со статусом '" << right << "' получает вознаграждение в виде:\n";
+        std::cout << "1. Возможность подняться до Супер-администратора\n";
+        std::cout << "2. Возможность работать по графику 2/1 вместо 5/1\n";
+        std::cout << "-----------------------------------------------------\n";
+        std::cout << "Хотите подняться до уровня Супер-администратора - напишите 1\n";
+        std::cout << "Хотите остаться на том же уровне, но с другим графиком работы - напишите другую цифру\n";
+        std::cin >> up;
+        if (std::stoi(up) == 1) {
+            auto find_login = std::find(loginNames.begin(), loginNames.end(), login);
+            auto find = std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
+            rights[std::distance(find, find_login)] = "Супер-администратор";
+            std::cout << "Сотрудник '" << login << "' был успешно поднят до статуса '" << rights[std::distance(find, find_login)] << "'.\nПоздравляем!";
+            storage();
+        }
+        else {
+            std::cout << "Возвращение в работу" << std::endl;
+            storage();
+        }
+    } else {
+        std::cout << login << " со статусом '" << right << "' получает вознаграждение в виде:\n";
+        std::cout << "Возможность стать директором магазина\n";
+        std::cout << "-----------------------------------------------------\n";
+        std::cout << "Хотите подняться до секретного уровня директора - напишите 1\n";
+        std::cout << "Хотите остаться на том же уровне, но с другим графиком работы - напишите другую цифру\n";
+        std::cin >> up;
+        if (std::stoi(up) == 1) {
+            auto find_login = std::find(loginNames.begin(), loginNames.end(), login);
+            auto find = std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
+            rights[std::distance(find, find_login)] = "Директор";
+            std::cout << "Сотрудник '" << login << "' был успешно поднят до статуса '" << rights[std::distance(find, find_login)] << "'.\nПоздравляем!";
+            storage();
+        }
+        else {
+            std::cout << "Возвращение в работу" << std::endl;
+            storage();
+        }
     }
 }
 
@@ -215,8 +391,13 @@ void sales() {
         menu(1);
     }
     std::cout << std::right << std::setw(62) << "Итоги продаж за день\n";
-    std::cout << "Было всего продано товаров: " << count_sales << "\n";
-    std::cout << "Было всего заработано: \n" << earned_money << "\n";
+    double sum_saled_product = 0.0;
+    std::cout << "Наименование товара" << "\t" << "Количество" << "\t" << "Сумма" << "\n";
+    for(std::size_t i = 0; i < saled_products.size(); ++i) {
+        std::cout << saled_products[i] << "\t" << result_count_products[i] << "\t" << result_saled_products[i] << "\n";
+        sum_saled_product += result_saled_products[i];
+    }
+    std::cout << "Итоговая сумма с проданных товаров: " << sum_saled_product << std::endl;
 }
 
 void discounts(std::size_t id, double product_price) {
@@ -238,6 +419,9 @@ void discounts(std::size_t id, double product_price) {
 }
 
 void payment(std::string product, double product_price, std::size_t count) {
+    saled_products.emplace_back(product);
+    result_saled_products.emplace_back(product_price * (double)count);
+    result_count_products.emplace_back(count);
     std::string select_payment_operation = "", number_card = "", CVC = "", espiration_date = "", count_cash = "", get_check = "";
     std::string numbers_from_espiration_date[2];
     std::size_t full_numbers = 0;
@@ -268,13 +452,13 @@ void payment(std::string product, double product_price, std::size_t count) {
             std::cerr << "Номер карты должен быть 16-значным. Попробуйте еще раз" << std::endl;
             payment(product, product_price, count);
         }
-        else if (CVC.size() < 3 || !std::isdigit(CVC.at(0))) {
+        else if (CVC.size() < 3 || !std::isdigit(CVC.at(0),std::locale(""))) {
             std::cerr << "Код CVC для карты должен быть трехзначным. Попробуйте еще раз" << std::endl;
             payment(product, product_price, count);
         }
         else if (
             std::stoi(numbers_from_espiration_date[0]) < 1 || std::stoi(numbers_from_espiration_date[0]) > 12 &&
-            std::stoi(numbers_from_espiration_date[1]) < 25) {
+                                                                  std::stoi(numbers_from_espiration_date[1]) < 25) {
             std::cerr << "Неверное указание срока годности карты. Попробуйте еще раз" << std::endl;
             payment(product, product_price, count);
         }
@@ -419,9 +603,19 @@ void start(short attempt) {
         start(attempt);
     }
     else {
-        auto find_id_from_first = std::find(id.begin(), id.end(), id.at(0));
-        payment(productName[std::distance(find_id_from_first, find_id_product)],
-            price[std::distance(find_id_from_first, find_id_product)],std::stoi(count_product));
+        std::string return_product = "";
+        std::cout << "Хотите ли Вы отказаться от товара.\n";
+        std::cout << "Если да, то напишите 1. Если нет, то другую цифру:\n";
+        std::cin >> return_product;
+        if(std::stoi(return_product) == 1) {
+            select_id_product.clear();
+            count_product.clear();
+            start(1);
+        } else {
+            auto find_id_from_first = std::find(id.begin(), id.end(), id.at(0));
+            payment(productName[std::distance(find_id_from_first, find_id_product)],
+                    price[std::distance(find_id_from_first, find_id_product)],std::stoi(count_product));
+        }
     }
 }
 
@@ -436,6 +630,15 @@ void storage() {
         menu(1);
     }
     if (rights[std::distance(find_from_first_login, find_login)] == "Супер-администратор") {
+        if (count_changed_storage_times >= 100) {
+            std::string check_premium = "";
+            std::cout << "Уважаемый '" << get_login << "' со статусом '" << rights[std::distance(find_from_first_login, find_login)] << "' " <<
+                "!\nВам пришло уведомление, связанное с достижением определенного количества изменений на складу для получения премии.\nНапишите 1 для просмотра премиума, любую другую цифру для отказа просмотра\n";
+            std::cin >> check_premium;
+            if (std::stoi(check_premium) == 1) {
+                premium(get_login, rights[std::distance(find_from_first_login, find_login)]);
+            }
+        }
         std::string _id = "", _price = "", operation = "";
         std::cout << "Выберите операцию по работе с товарами: \n";
         std::cout << "1. Изменение цены\n";
@@ -459,6 +662,7 @@ void storage() {
                 auto find_from_first_element = std::find(price.begin(), price.end(), price.at(0));
                 price[std::distance(find_from_first_element, find_necessary_price)] = std::stoi(_price);
                 std::cout << "Цена товара успешно изменена" << std::endl;
+                count_changed_storage_times++;
                 menu(1);
             }
         }
@@ -469,7 +673,7 @@ void storage() {
                 std::cerr << "Ошибка. Товара с таким id не существует. Повторите еще раз" << std::endl;
                 storage();
             }
-            else if (!std::isdigit(_id.at(0))) {
+            else if (!std::isdigit(_id.at(0),std::locale(""))) {
                 std::cerr << "Ошибка написания айди товара. Попробуйте еще раз" << std::endl;
                 storage();
             }
@@ -481,6 +685,7 @@ void storage() {
                 auto find_from_first_id = std::find(id.begin(), id.end(), id.at(0));
                 productName[std::distance(find_from_first_id, find_id)] = newName;
                 std::cout << "Название товара было успешно изменено" << std::endl;
+                count_changed_storage_times++;
                 menu(1);
             }
         }
@@ -514,6 +719,7 @@ void storage() {
                     else {
                         count[std::distance(find_from_first, find_id)] = std::stoi(newCount);
                         std::cout << "Количество товара успешно уменьшено" << std::endl;
+                        count_changed_storage_times++;
                         menu(1);
                     }
                 }
@@ -532,13 +738,13 @@ void storage() {
                         productName.begin(),
                         productName.end(),
                         productName[std::distance(find_from_first_id, find_necessary_id)]
-                    );
+                        );
                     productName.erase(find_necessary_product);
                     auto find_necessary_price = std::find(
                         price.begin(),
                         price.end(),
                         price[std::distance(find_from_first_id, find_necessary_id)]
-                    );
+                        );
                     price.erase(find_necessary_price);
                     auto find_necessary_count = std::find(
                         count.begin(),
@@ -547,6 +753,7 @@ void storage() {
                     count.erase(find_necessary_count);
                     id.erase(find_necessary_id);
                     std::cout << "Списание товара прошло успешно" << std::endl;
+                    count_changed_storage_times++;
                     menu(1);
                 }
             }
@@ -557,19 +764,19 @@ void storage() {
             std::string newNameProduct = "", newCount = "", newPrice = "";
             std::cout << "Напишите новое название товара:\n";
             std::cin >> newNameProduct;
-            if (!std::isalpha(newNameProduct.at(0))) {
+            if (!std::isalpha(newNameProduct.at(0),std::locale(""))) {
                 std::cerr << "Ошибка наименования товара. Попробуйте еще раз" << std::endl;
                 storage();
             }
             std::cout << "Напишите количество нового товара:\n";
             std::cin >> newCount;
-            if (std::isalpha(newCount.at(0))) {
+            if (std::isalpha(newCount.at(0),std::locale(""))) {
                 std::cerr << "Ошибка указания количества товара. Попробуйте еще раз" << std::endl;
                 storage();
             }
             std::cout << "Напишите цену нового товара:\n";
             std::cin >> newPrice;
-            if (std::isalpha(newPrice.at(0))) {
+            if (std::isalpha(newPrice.at(0),std::locale(""))) {
                 std::cerr << "Ошибка указания цены товара. Попробуйте еще раз" << std::endl;
                 storage();
             }
@@ -578,6 +785,7 @@ void storage() {
             count.emplace_back(std::stoi(newCount));
             price.emplace_back(std::stod(newPrice));
             std::cout << "Товар успешно добавлен на склад магазина" << std::endl;
+            count_changed_storage_times++;
             menu(1);
         }
         else if (std::stoi(operation) == 5) {
@@ -591,6 +799,7 @@ void storage() {
             else {
                 auto find_from_first_id = std::find(id.begin(), id.end(), id.at(0));
                 std::cout << "Айди " << _id << " для товара '" << productName[std::distance(find_from_first_id, find_id)] << "' был успешно изменен" << std::endl;
+                count_changed_storage_times++;
                 menu(1);
             }
         }
@@ -604,6 +813,15 @@ void storage() {
         }
     }
     else if (rights[std::distance(find_from_first_login, find_login)] == "Администратор") {
+        if (count_changed_storage_times >= 100) {
+            std::string check_premium = "";
+            std::cout << "Уважаемый '" << get_login << "' со статусом '" << rights[std::distance(find_from_first_login, find_login)] << "' " <<
+                "!\nВам пришло уведомление, связанное с достижением определенного количества изменений на складу для получения премии.\nНапишите 1 для просмотра премиума, любую другую цифру для отказа просмотра\n";
+            std::cin >> check_premium;
+            if (std::stoi(check_premium) == 1) {
+                premium(get_login, rights[std::distance(find_from_first_login, find_login)]);
+            }
+        }
         std::cout << "Выберите опцию по работе с товарами\n";
         std::cout << "1. Приёмка товара\n";
         std::cout << "2. Отгрузка товара\n";
@@ -631,15 +849,15 @@ void storage() {
                 std::cin >> new_price;
                 std::cout << "Введите количество товара:\n";
                 std::cin >> new_count;
-                if (std::stoi(new_product_id) < 1 || !std::isdigit(new_product_id.at(0))) {
+                if (std::stoi(new_product_id) < 1 || !std::isdigit(new_product_id.at(0),std::locale(""))) {
                     std::cerr << "Некорректное обозначение id товара. Попробуйте еще раз" << std::endl;
                     storage();
                 }
-                else if (std::stod(new_price) < 0.0 || !std::isdigit(new_price.at(0))) {
+                else if (std::stod(new_price) < 0.0 || !std::isdigit(new_price.at(0),std::locale(""))) {
                     std::cout << "Некорректное обозначение цены товара. Попробуйте еще раз" << std::endl;
                     storage();
                 }
-                else if (std::stoi(new_count) < 1 || !std::isdigit(new_count.at(0))) {
+                else if (std::stoi(new_count) < 1 || !std::isdigit(new_count.at(0),std::locale(""))) {
                     std::cerr << "Некорректное обозначение количества товара. Попробуйте еще раз" << std::endl;
                     storage();
                 }
@@ -649,6 +867,7 @@ void storage() {
                     price_from_acceptance.emplace_back(std::stod(new_price));
                     count_from_acceptance.emplace_back(std::stoi(new_count));
                     std::cout << "Новый товар успешно принят в приемку" << std::endl;
+                    count_changed_storage_times++;
                     menu(1);
                 }
             }
@@ -670,6 +889,7 @@ void storage() {
                 price.emplace_back(price_from_acceptance.at(std::stoi(select_product)));
                 count.emplace_back(count_from_acceptance.at(std::stoi(select_product)));
                 std::cout << "Товар успешно отгружен" << std::endl;
+                count_changed_storage_times++;
                 menu(1);
             }
         }
@@ -713,7 +933,7 @@ void storage() {
             else {
                 auto find_id_from_first = std::find(id.begin(), id.end(), id.at(0));
                 discounts(id.at(std::distance(find_id_from_first, find_id)),
-                    price.at(std::distance(find_id_from_first, find_id)));
+                          price.at(std::distance(find_id_from_first, find_id)));
             }
         }
         else {
