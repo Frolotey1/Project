@@ -60,11 +60,8 @@ std::vector<std::string> productName{
     "Grok algorithms",
     "The clean code"
 };
-std::vector<std::size_t> id_from_acceptance{ 0 }, count_from_acceptance{ 0 };
-std::vector<std::string> product_from_acceptance{ "" }; std::vector<double> price_from_acceptance{ 0.0 };
 std::vector<std::string> saled_products; std::vector<double> result_saled_products;
 std::vector<std::size_t> result_count_products;
-
 void registry(short attempt) {
     if (attempt >= 10) {
         std::cout << YELLOW << "Было использовано около 10 попыток захода в магазин. Попробуйте позже" << RESET << std::endl;
@@ -76,16 +73,16 @@ void registry(short attempt) {
     for (std::size_t show_all_types = 1; show_all_types < 4; ++show_all_types) {
         std::cout << show_all_types << ") " << type_user[show_all_types] << std::endl;
     }
-    std::cout << LIGHT_BLUE << "Выберите тип пользователя, от лица которого вы будете работать с магазином: " << RESET;
+    std::cout << LIGHT_BLUE << "Выберите тип пользователя, от лица которого вы будете работать с магазином:\n" << RESET;
     std::cin >> select_user;
     if (std::stoi(select_user) < 1 || std::stoi(select_user) > 3) {
         std::cerr << RED << "Такого типа пользователя не существует." << RESET << std::endl;
         menu(1);
     }
     else {
-        std::cout << "Напишите имя пользователя для типа '" << type_user[std::stoi(select_user)] << "\n";
+        std::cout << "Напишите имя пользователя для типа " << type_user[std::stoi(select_user)] << "\n";
         std::cin >> name;
-        std::cout << "Напишите пароль для пользователя типа'" << type_user[std::stoi(select_user)] << "\n";
+        std::cout << "Напишите пароль для пользователя типа " << type_user[std::stoi(select_user)] << "\n";
         std::cin >> password;
         if (name.size() < 5 && password.size() < 5) {
             std::cerr << RED << "Логин или пароль меньше указанных параметров.Попробуйте еще раз." << RESET << std::endl;
@@ -431,6 +428,7 @@ void sales() {
 
 void discounts(std::size_t id, double product_price) {
     std::string discount = "";
+    id--;
     std::cout << LIGHT_BLUE << "Введите скидку на товар " << productName[id] << RESET << ":\n";
     std::cin >> discount;
     if (discount.at(0) == '-') {
@@ -552,7 +550,6 @@ void payment(std::string product, double product_price, std::size_t count) {
         }
         else {
             std::cerr << RED << "Недостаточно средств на счету" << RESET << std::endl;
-            system("cls");
             menu(1);
         }
     }
@@ -619,8 +616,16 @@ void start(short attempt) {
     std::string select_id_product = "", count_product = "";
     std::cout << "Напишите id продукта для покупки:\n";
     std::cin >> select_id_product;
+    if (!std::isdigit(select_id_product.at(0))) {
+        std::cerr << RED << "Ошибка ввода id товара. Попробуйте еще раз" << RESET << std::endl;
+        start(1);
+    }
     std::cout << "Напишите количество продукта:\n";
     std::cin >> count_product;
+    if (!std::isdigit(count_product.at(0))) {
+        std::cerr << RED << "Ошибка ввода количества товара. Попробуйте еще раз" << RESET << std::endl;
+        start(1);
+    }
     auto find_id_product = std::find(id.begin(), id.end(), std::stoi(select_id_product));
     auto find_from_first = std::find(id.begin(), id.end(), id.at(0));
     if (find_id_product == id.end()) {
@@ -691,7 +696,7 @@ void storage() {
                 storage();
             }
             else {
-                std::cout << "Напишите цены товара: \n";
+                std::cout << "Напишите цену товара: \n";
                 std::cin >> _price;
                 auto find_necessary_price = std::find(price.begin(), price.end(), std::stoi(_price));
                 auto find_from_first_element = std::find(price.begin(), price.end(), price.at(0));
@@ -863,11 +868,9 @@ void storage() {
         std::string option = "";
         std::cin >> option;
         if (std::stoi(option) == 1) {
-            std::size_t index = 0;
             std::string choose_product = "";
             std::string new_products[]{ "","The Kotlin Book","The C Embedded Book","The C++ Embedded Book","Ubuntu is greater than Linux" };
-            for (auto& show_all_books : new_products) {
-                index++;
+            for (std::size_t index = 1; index < 5; ++index) {
                 std::cout << index << ") " << new_products[index] << "\n";
             }
             std::cout << "Выберите товар для приёмки:\n";
@@ -884,7 +887,12 @@ void storage() {
                 std::cin >> new_price;
                 std::cout << "Введите количество товара:\n";
                 std::cin >> new_count;
-                if (std::stoi(new_product_id) < 1 || !std::isdigit(new_product_id.at(0), std::locale(""))) {
+                auto find_existed_id = std::find(id.begin(), id.end(), std::stoi(new_product_id));
+                if (find_existed_id != id.end()) {
+                    std::cerr << RED << "Товар с таким id существует. Введите другое несуществуюшее id кроме 0 и меньше" << RESET << std::endl;
+                    storage();
+                }
+                else if (std::stoi(new_product_id) < 1 || !std::isdigit(new_product_id.at(0), std::locale(""))) {
                     std::cerr << RED << "Некорректное обозначение id товара. Попробуйте еще раз" << RESET << std::endl;
                     storage();
                 }
@@ -897,10 +905,10 @@ void storage() {
                     storage();
                 }
                 else {
-                    product_from_acceptance.emplace_back(new_products[std::stoi(choose_product)]);
-                    id_from_acceptance.emplace_back(std::stoi(new_product_id));
-                    price_from_acceptance.emplace_back(std::stod(new_price));
-                    count_from_acceptance.emplace_back(std::stoi(new_count));
+                    productName.emplace_back(new_products[std::stoi(choose_product)]);
+                    id.emplace_back(std::stoi(new_product_id));
+                    price.emplace_back(std::stod(new_price));
+                    count.emplace_back(std::stoi(new_count));
                     std::cout << GREEN << "Новый товар успешно принят в приемку" << RESET << std::endl;
                     count_changed_storage_times++;
                     menu(1);
@@ -910,20 +918,22 @@ void storage() {
         else if (std::stoi(option) == 2) {
             std::string select_product = "";
             std::cout << LIGHT_BLUE << "Выберите товар для отгрузки:\n" << RESET;
-            for (std::size_t i = 0; i < product_from_acceptance.size(); ++i) {
-                std::cout << i + 1 << ") " << product_from_acceptance.at(i) << "\n";
+            for (std::size_t i = 0; i < productName.size(); ++i) {
+                std::cout << i + 1 << ") " << productName.at(i) << "\n";
             }
             std::cin >> select_product;
-            if (std::stoi(select_product) < 1 || std::stoi(select_product) > product_from_acceptance.size()) {
+            if (std::stoi(select_product) < 1 || std::stoi(select_product) > productName.size()) {
                 std::cerr << RED << "Такого варианта не существует. Попробуйте еще раз\n" << RESET;
                 storage();
             }
             else {
-                productName.emplace_back(product_from_acceptance.at(std::stoi(select_product)));
-                id.emplace_back(id_from_acceptance.at(std::stoi(select_product)));
-                price.emplace_back(price_from_acceptance.at(std::stoi(select_product)));
-                count.emplace_back(count_from_acceptance.at(std::stoi(select_product)));
-                std::cout << GREEN << "Товар успешно отгружен" << RESET << std::endl;
+                auto find_product = std::find(productName.begin(),productName.end(),select_product);
+                auto find_from_first_product = std::find(productName.begin(),productName.end(),productName.at(0));
+                productName.emplace_back(productName.at(std::distance(find_from_first_product,find_product)));
+                id.emplace_back(id.at(std::distance(find_from_first_product,find_product)));
+                count.emplace_back(count.at(std::distance(find_from_first_product,find_product)));
+                price.emplace_back(price.at(std::distance(find_from_first_product,find_product)));
+                std::cout << GREEN << "Товар успешно отгружен перевозчику" << RESET << std::endl;
                 count_changed_storage_times++;
                 menu(1);
             }
@@ -954,11 +964,11 @@ void storage() {
         }
         else if (std::stoi(option) == 1) {
             std::string select_id = "";
-            std::cout << "Выберите товар по айди для реализации скидки:\n";
             std::cout << "Айди" << "\t" << "Наименование товара" << "\t" << "Цена" << "\t" << "Количество" << std::endl;
             for (std::size_t i = 0; i < productName.size(); ++i) {
                 std::cout << id[i] << "\t" << productName[i] << "\t\t" << price[i] << "\t" << count[i] << std::endl;
             }
+            std::cout << "Выберите товар по айди для реализации скидки:\n";
             std::cin >> select_id;
             auto find_id = std::find(id.begin(), id.end(), std::stoi(select_id));
             if (find_id == id.end()) {
@@ -984,20 +994,20 @@ void storage() {
                 std::cerr << RED << "Продукта с таким id не существует. Попробуйте еще раз" << RESET << std::endl;
                 storage();
             }
-            auto id_on_storage = std::find(id_from_acceptance.begin(), id_from_acceptance.end(), std::stoi(id_product_for_returning));
-            auto on_storage = std::find(id_from_acceptance.begin(), id_from_acceptance.end(), id_from_acceptance.at(0));
-            auto product_on_storage = std::find(product_from_acceptance.begin(), product_from_acceptance.end(), product_from_acceptance.at(std::distance(on_storage, id_on_storage)));
-            auto price_on_storage = std::find(price_from_acceptance.begin(), price_from_acceptance.end(), price_from_acceptance.at(std::distance(on_storage, id_on_storage)));
-            auto count_on_storage = std::find(count_from_acceptance.begin(), count_from_acceptance.end(), count_from_acceptance.at(std::distance(on_storage, id_on_storage)));
-            product_from_acceptance.erase(product_on_storage);
-            price_from_acceptance.erase(price_on_storage);
-            count_from_acceptance.erase(count_on_storage);
-            id_from_acceptance.erase(id_on_storage);
+            auto id_on_storage = std::find(id.begin(), id.end(), std::stoi(id_product_for_returning));
+            auto on_storage = std::find(id.begin(), id.end(), id.at(0));
+            auto product_on_storage = std::find(productName.begin(), productName.end(), productName.at(std::distance(on_storage, id_on_storage)));
+            auto price_on_storage = std::find(price.begin(), price.end(), price.at(std::distance(on_storage, id_on_storage)));
+            auto count_on_storage = std::find(count.begin(), count.end(), count.at(std::distance(on_storage, id_on_storage)));
+            productName.erase(product_on_storage);
+            price.erase(price_on_storage);
+            count.erase(count_on_storage);
+            id.erase(id_on_storage);
             auto find_from = std::find(id.begin(), id.end(), id.at(0));
-            id_from_acceptance.emplace_back(id.at(std::distance(find_from, find)));
-            product_from_acceptance.emplace_back(productName.at(std::distance(find_from, find)));
-            price_from_acceptance.emplace_back(price.at(std::distance(find_from, find)));
-            count_from_acceptance.emplace_back(count.at(std::distance(find_from, find)));
+            id.emplace_back(id.at(std::distance(find_from, find)));
+            productName.emplace_back(productName.at(std::distance(find_from, find)));
+            price.emplace_back(price.at(std::distance(find_from, find)));
+            count.emplace_back(count.at(std::distance(find_from, find)));
             std::cout << GREEN << "Товар успешно возвращен на склад" << RESET << std::endl;
         }
     }
@@ -1009,7 +1019,6 @@ void storage() {
 
 int main() {
     setlocale(LC_ALL, "Rus");
-    srand(time(NULL));
     login(1);
     return 0;
 }
