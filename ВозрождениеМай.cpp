@@ -457,6 +457,7 @@ void sales() {
                 auto find_employee = std::find(loginNames.begin(),loginNames.end(),name_employee[0]);
                 auto find = std::find(loginNames.begin(),loginNames.end(), loginNames.at(0));
                 rights[std::distance(find,find_employee)] = "Сотрудник";
+                std::cout << GREEN <<  "Штраф сотруднику '" << name_employee[0] << "' был успешно выдан" << RESET << std::endl;
             }
         } else {
             std::cout << GREEN << "Товаров было продано на сумму больше или равной 500 рублям" << RESET << std::endl;
