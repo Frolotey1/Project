@@ -39,13 +39,14 @@ void momFriendSon();
 void menu(short attempt);
 void registry(short attempt);
 
+bool is_employee = 0;
 
 size_t count_sales = 0, count_changed_storage_times = 0; double earned_money = 0.0;
 std::string client;
 std::vector<std::string> loginNames,
-passwords,
-userRights{ "Супер-администратор","Администратор","Сотрудник" },
-rights;
+    passwords,
+    userRights{ "Супер-администратор","Администратор","Сотрудник" },
+    rights;
 std::vector<std::size_t> id{ 1,2,3,4,5,6,7,8,9,10 }, count{ 4,6,5,2,1,8,9,10,3,7 };
 std::vector<double> price{ 49.0,56.0,44.0,45.0,39.0,42.0,55.9,59.0,30.0,50.0 };
 std::vector<std::string> productName{
@@ -60,6 +61,7 @@ std::vector<std::string> productName{
     "Grok algorithms",
     "The clean code"
 };
+
 std::vector<std::string> saled_products; std::vector<double> result_saled_products;
 std::vector<std::size_t> result_count_products;
 void registry(short attempt) {
@@ -80,6 +82,9 @@ void registry(short attempt) {
         menu(1);
     }
     else {
+        if(type_user[std::stoi(select_user)] == "Сотрудник") {
+            is_employee = 1;
+        }
         std::cout << "Напишите имя пользователя для типа " << type_user[std::stoi(select_user)] << "\n";
         std::cin >> name;
         std::cout << "Напишите пароль для пользователя типа " << type_user[std::stoi(select_user)] << "\n";
@@ -131,7 +136,7 @@ void login(short attempt) {
         auto find_password = std::find(passwords.begin(), passwords.end(), password);
         if (find_loginName != loginNames.end() || find_password != passwords.end()) {
             std::cout << GREEN << "Пользователь " << loginNames[std::distance(from_first_name_user, find_loginName)]
-                << " успешно вошел в систему" << RESET << std::endl;
+                      << " успешно вошел в систему" << RESET << std::endl;
             std::cout << GREEN << "Ваш статус: " << rights[std::distance(from_first_name_user, find_loginName)] << RESET << std::endl;
             menu(1);
         }
@@ -170,7 +175,7 @@ void accounts() {
     if (rights[std::distance(find_from_first, find_right)] == "Супер-администратор") {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
             std::cout << "Логин: " << loginNames[i] << " | " << "Пароль: " << passwords[i]
-                << " | " << "Права: " << rights[i] << std::endl;
+                      << " | " << "Права: " << rights[i] << std::endl;
         }
         std::string operation = "";
         std::cout << "Что хотите изменить:\n";
@@ -229,7 +234,7 @@ void accounts() {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
             if (rights[i] != "Супер-администратор") {
                 std::cout << "Логин: " << loginNames[i] << " | " << "Пароль: " << passwords[i]
-                    << " | " << "Права: " << rights[i] << std::endl;
+                          << " | " << "Права: " << rights[i] << std::endl;
             }
         }
         std::string operation = "";
@@ -289,7 +294,7 @@ void accounts() {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
             if (rights[i] == "Сотрудник") {
                 std::cout << "Логин: " << loginNames[i] << " | " << "Пароль: " << passwords[i]
-                    << " | " << "Права: " << rights[i] << std::endl;
+                          << " | " << "Права: " << rights[i] << std::endl;
             }
         }
         std::string operation = "";
@@ -415,14 +420,48 @@ void sales() {
         std::cerr << RED << "У вас недостаточно прав на просмотр отчета продаж" << RESET << std::endl;
         menu(1);
     }
-    std::cout << YELLOW << std::right << std::setw(62) << "Итоги продаж за день\n" << RESET;
-    double sum_saled_product = 0.0;
-    std::cout << "Наименование товара" << "\t" << "Количество" << "\t" << "Сумма" << "\n";
-    for (std::size_t i = 0; i < saled_products.size(); ++i) {
-        std::cout << saled_products[i] << "\t\t" << result_count_products[i] << "\t\t" << result_saled_products[i] << "\n";
-        sum_saled_product += result_saled_products[i];
+    std::string name_employee[1];
+    if(is_employee == 1) {
+        std::string get_login = "";
+        std::cout << "Введите свой логин:\n";
+        std::cin >> get_login;
+        auto find_login = std::find(loginNames.begin(), loginNames.end(), get_login);
+        auto find_from_first_login = std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
+        if(find_login == loginNames.end()) {
+            std::cerr << RED << "Логин не найден. Попробуйте еще раз" << RESET << std::endl;
+            sales();
+        }
+        name_employee[0] = loginNames[std::distance(find_from_first_login,find_login)];
+        std::cout << YELLOW << std::right << std::setw(62) << "Итоги продаж за день\n" << RESET;
+        double sum_saled_product = 0.0;
+        std::cout << "Наименование товара" << "\t" << "Количество" << "\t" << "Сумма" << "\n";
+        for (std::size_t i = 0; i < saled_products.size(); ++i) {
+            std::cout << saled_products[i] << "\t\t" << result_count_products[i] << "\t\t" << result_saled_products[i] << "\n";
+            sum_saled_product += result_saled_products[i];
+        }
+        std::cout << YELLOW << "Итоговая сумма с проданных товаров: " << sum_saled_product << " рублей" << RESET << std::endl;
+    } else {
+        std::cout << YELLOW << std::right << std::setw(62) << "Итоги продаж за день\n" << RESET;
+        double sum_saled_product = 0.0;
+        std::cout << "Наименование товара" << "\t" << "Количество" << "\t" << "Сумма" << "\n";
+        for (std::size_t i = 0; i < saled_products.size(); ++i) {
+            std::cout << saled_products[i] << "\t\t" << result_count_products[i] << "\t\t" << result_saled_products[i] << "\n";
+            sum_saled_product += result_saled_products[i];
+        }
+        if(sum_saled_product < 500.0) {
+            std::string give_fine = "";
+            std::cout << YELLOW << "Сотрудник '" << name_employee[0] << "' продал товары на сумму меньше 500 рублей. Напишите 1 чтобы им выдать штраф, другую цифру если пощадить: \n" << RESET;
+            std::cin >> give_fine;
+            if(std::stoi(give_fine) == 1) {
+                count_sales = 1;
+                auto find_employee = std::find(loginNames.begin(),loginNames.end(),name_employee[0]);
+                auto find = std::find(loginNames.begin(),loginNames.end(), loginNames.at(0));
+                rights[std::distance(find,find_employee)] = "Сотрудник";
+            }
+        } else {
+            std::cout << GREEN << "Товаров было продано на сумму больше или равной 500 рублям" << RESET << std::endl;
+        }
     }
-    std::cout << YELLOW << "Итоговая сумма с проданных товаров: " << sum_saled_product << " рублей" << RESET << std::endl;
     menu(1);
 }
 
@@ -485,7 +524,7 @@ void payment(std::string product, double product_price, std::size_t count) {
         }
         else if (
             std::stoi(numbers_from_espiration_date[0]) < 1 || std::stoi(numbers_from_espiration_date[0]) > 12 &&
-            std::stoi(numbers_from_espiration_date[1]) < 25) {
+                                                                  std::stoi(numbers_from_espiration_date[1]) < 25) {
             std::cerr << RED << "Неверное указание срока годности карты. Попробуйте еще раз" << RESET << std::endl;
             payment(product, product_price, count);
         }
@@ -506,7 +545,6 @@ void payment(std::string product, double product_price, std::size_t count) {
                     std::cout << "-------------------------------------------\n";
                     std::cout << "666666 г. Екатеринбург ул. Фурманова 57\n";
                     auto date = std::chrono::system_clock::now();
-                    std::cout << "Дата и время оформления чека: " << std::format("{}", date) << std::endl;
                     count_sales++; earned_money += (std::stod(count_cash) - sum_for_paying);
                     menu(1);
                 }
@@ -538,7 +576,6 @@ void payment(std::string product, double product_price, std::size_t count) {
                 std::cout << "-------------------------------------------\n";
                 std::cout << "666666 г. Екатеринбург ул. Фурманова 57\n";
                 auto date = std::chrono::system_clock::now();
-                std::cout << "Дата и время оформления чека: " << std::format("{}", date) << std::endl;
                 count_sales++; earned_money += (std::stod(count_cash) - sum_for_paying);
                 menu(1);
             }
@@ -616,13 +653,13 @@ void start(short attempt) {
     std::string select_id_product = "", count_product = "";
     std::cout << "Напишите id продукта для покупки:\n";
     std::cin >> select_id_product;
-    if (!std::isdigit(select_id_product.at(0))) {
+    if (!std::isdigit(select_id_product.at(0),std::locale(""))) {
         std::cerr << RED << "Ошибка ввода id товара. Попробуйте еще раз" << RESET << std::endl;
         start(1);
     }
     std::cout << "Напишите количество продукта:\n";
     std::cin >> count_product;
-    if (!std::isdigit(count_product.at(0))) {
+    if (!std::isdigit(count_product.at(0),std::locale(""))) {
         std::cerr << RED << "Ошибка ввода количества товара. Попробуйте еще раз" << RESET << std::endl;
         start(1);
     }
@@ -654,7 +691,7 @@ void start(short attempt) {
             count[std::distance(find_from_first, find_id_product)] -= std::stoi(count_product);
             auto find_id_from_first = std::find(id.begin(), id.end(), id.at(0));
             payment(productName[std::distance(find_id_from_first, find_id_product)],
-                price[std::distance(find_id_from_first, find_id_product)], std::stoi(count_product));
+                    price[std::distance(find_id_from_first, find_id_product)], std::stoi(count_product));
         }
     }
 }
@@ -778,13 +815,13 @@ void storage() {
                         productName.begin(),
                         productName.end(),
                         productName[std::distance(find_from_first_id, find_necessary_id)]
-                    );
+                        );
                     productName.erase(find_necessary_product);
                     auto find_necessary_price = std::find(
                         price.begin(),
                         price.end(),
                         price[std::distance(find_from_first_id, find_necessary_id)]
-                    );
+                        );
                     price.erase(find_necessary_price);
                     auto find_necessary_count = std::find(
                         count.begin(),
@@ -829,7 +866,7 @@ void storage() {
             menu(1);
         }
         else if (std::stoi(operation) == 5) {
-            std::cout << "Напишите новое id для товара:\n";
+            std::cout << "Напишите  id для товара:\n";
             std::cin >> _id;
             auto find_id = std::find(id.begin(), id.end(), std::stoi(_id));
             if (find_id == id.end()) {
@@ -837,8 +874,12 @@ void storage() {
                 storage();
             }
             else {
+                std::string new_id = "";
+                std::cout << "Напишите новое id товара:\n";
+                std::cin >> new_id;
                 auto find_from_first_id = std::find(id.begin(), id.end(), id.at(0));
-                std::cout << GREEN << "Айди " << _id << " для товара '" << productName[std::distance(find_from_first_id, find_id)] << "' был успешно изменен" << RESET << std::endl;
+                id[std::distance(find_from_first_id, find_id)] = std::stoi(new_id);
+                std::cout << GREEN << "Айди " << _id << " для товара '" << productName[std::distance(find_from_first_id, find_id)] << "' был успешно изменен на " << new_id << RESET << std::endl;
                 count_changed_storage_times++;
                 menu(1);
             }
@@ -863,80 +904,60 @@ void storage() {
             }
         }
         std::cout << LIGHT_BLUE << "Выберите опцию по работе с товарами\n" << RESET;
-        std::cout << "1. Приёмка товара\n";
-        std::cout << "2. Отгрузка товара\n";
+        std::cout << "1. Отчёт продаж\n";
+        std::cout << "2. Изменение товара\n";
+        std::cout << "3. Выход со склада" << std::endl;
         std::string option = "";
         std::cin >> option;
-        if (std::stoi(option) == 1) {
-            std::string choose_product = "";
-            std::string new_products[]{ "","The Kotlin Book","The C Embedded Book","The C++ Embedded Book","Ubuntu is greater than Linux" };
-            for (std::size_t index = 1; index < 5; ++index) {
-                std::cout << index << ") " << new_products[index] << "\n";
+        if(std::stoi(option) == 1) {
+            sales();
+        } else if (std::stoi(option) == 2) {
+            std::cout << "Айди" << "\t" << "Наименование товара" << "\t" << "Цена" << "\t" << "Количество" << std::endl;
+            for (std::size_t i = 0; i < 10; ++i) {
+                std::cout << id[i] << "\t" << productName[i] << "\t\t" << price[i] << "\t" << count[i] << std::endl;
             }
-            std::cout << "Выберите товар для приёмки:\n";
-            std::cin >> choose_product;
-            if (std::stoi(choose_product) < 1 || std::stoi(choose_product) > 4) {
-                std::cerr << RED << "Такого товара нет. Попробуйте еще раз" << RESET << std::endl;
+            std::string check_id = "", new_id = "", new_count = "", new_price = "", new_name = "";
+            std::cout << "Напишите товар для его изменения по айди:\n";
+            std::cin >> check_id;
+            auto find_id = std::find(id.begin(),id.end(),std::stoi(check_id));
+            auto find_id_from_first = std::find(id.begin(),id.end(),id.at(0));
+            if(find_id == id.end()) {
+                std::cerr << RED << "Товара с таким id не существует. Повторите попытку" << RESET << std::endl;
                 storage();
             }
-            else {
-                std::string new_product_id = "", new_price = "", new_count = "";
-                std::cout << "Введите новое id товара для приёмки: \n";
-                std::cin >> new_product_id;
-                std::cout << "Введите цену для товара:\n";
-                std::cin >> new_price;
-                std::cout << "Введите количество товара:\n";
-                std::cin >> new_count;
-                auto find_existed_id = std::find(id.begin(), id.end(), std::stoi(new_product_id));
-                if (find_existed_id != id.end()) {
-                    std::cerr << RED << "Товар с таким id существует. Введите другое несуществуюшее id кроме 0 и меньше" << RESET << std::endl;
-                    storage();
-                }
-                else if (std::stoi(new_product_id) < 1 || !std::isdigit(new_product_id.at(0), std::locale(""))) {
-                    std::cerr << RED << "Некорректное обозначение id товара. Попробуйте еще раз" << RESET << std::endl;
-                    storage();
-                }
-                else if (std::stod(new_price) < 0.0 || !std::isdigit(new_price.at(0), std::locale(""))) {
-                    std::cout << RED << "Некорректное обозначение цены товара. Попробуйте еще раз" << RESET << std::endl;
-                    storage();
-                }
-                else if (std::stoi(new_count) < 1 || !std::isdigit(new_count.at(0), std::locale(""))) {
-                    std::cerr << RED << "Некорректное обозначение количества товара. Попробуйте еще раз" << RESET << std::endl;
-                    storage();
-                }
-                else {
-                    productName.emplace_back(new_products[std::stoi(choose_product)]);
-                    id.emplace_back(std::stoi(new_product_id));
-                    price.emplace_back(std::stod(new_price));
-                    count.emplace_back(std::stoi(new_count));
-                    std::cout << GREEN << "Новый товар успешно принят в приемку" << RESET << std::endl;
-                    count_changed_storage_times++;
-                    menu(1);
-                }
-            }
-        }
-        else if (std::stoi(option) == 2) {
-            std::string select_product = "";
-            std::cout << LIGHT_BLUE << "Выберите товар для отгрузки:\n" << RESET;
-            for (std::size_t i = 0; i < productName.size(); ++i) {
-                std::cout << i + 1 << ") " << productName.at(i) << "\n";
-            }
-            std::cin >> select_product;
-            if (std::stoi(select_product) < 1 || std::stoi(select_product) > productName.size()) {
-                std::cerr << RED << "Такого варианта не существует. Попробуйте еще раз\n" << RESET;
+            std::cout << "Введите новое название для товара:\n";
+            std::cin >> new_name;
+            if(std::isdigit(new_name.at(0),std::locale(""))) {
+                std::cerr << RED << "Ошибка наименования товара. Повторите попытку" << RESET << std::endl;
                 storage();
             }
-            else {
-                auto find_product = std::find(productName.begin(),productName.end(),select_product);
-                auto find_from_first_product = std::find(productName.begin(),productName.end(),productName.at(0));
-                productName.emplace_back(productName.at(std::distance(find_from_first_product,find_product)));
-                id.emplace_back(id.at(std::distance(find_from_first_product,find_product)));
-                count.emplace_back(count.at(std::distance(find_from_first_product,find_product)));
-                price.emplace_back(price.at(std::distance(find_from_first_product,find_product)));
-                std::cout << GREEN << "Товар успешно отгружен перевозчику" << RESET << std::endl;
-                count_changed_storage_times++;
-                menu(1);
+            std::cout << "Напишите новое айди товара:\n";
+            std::cin >> new_id;
+            if(!std::isdigit(new_id.at(0),std::locale(""))) {
+                std::cerr << RED << "Ошибка указания нового айди для товара. Повторите попытку" << RESET << std::endl;
+                storage();
             }
+            std::cout << "Напишите количество нового товара\n";
+            std::cin >> new_count;
+            if(!std::isdigit(new_count.at(0),std::locale(""))) {
+                std::cerr << RED << "Ошибка указания количества нового товара. Повторите попытку" << RESET << std::endl;
+                storage();
+            }
+            std::cout << "Введите новую цену для товара:\n";
+            std::cin >> new_price;
+            if(!std::isdigit(new_price.at(0),std::locale(""))) {
+                std::cerr << RED << "Ошибка указания цены для нового товара" << RESET << std::endl;
+                storage();
+            }
+            productName[std::distance(find_id_from_first,find_id)] = new_name;
+            id[std::distance(find_id_from_first,find_id)] = std::stoi(new_id);
+            count[std::distance(find_id_from_first,find_id)] = std::stoi(new_count);
+            price[std::distance(find_id_from_first,find_id)] = std::stod(new_price);
+            std::cout << GREEN << "Товар был успешно изменен" << RESET << std::endl;
+            count_changed_storage_times++;
+            storage();
+        } else if(std::stoi(option) == 3) {
+            menu(1);
         }
         else {
             std::cerr << RED << "Такой опции не существует. Попробуйте еще раз" << RESET << std::endl;
@@ -978,7 +999,7 @@ void storage() {
             else {
                 auto find_id_from_first = std::find(id.begin(), id.end(), id.at(0));
                 discounts(id[std::distance(find_id_from_first, find_id)],
-                    price[std::distance(find_id_from_first, find_id)]);
+                          price[std::distance(find_id_from_first, find_id)]);
             }
         }
         else {
@@ -994,20 +1015,6 @@ void storage() {
                 std::cerr << RED << "Продукта с таким id не существует. Попробуйте еще раз" << RESET << std::endl;
                 storage();
             }
-            auto id_on_storage = std::find(id.begin(), id.end(), std::stoi(id_product_for_returning));
-            auto on_storage = std::find(id.begin(), id.end(), id.at(0));
-            auto product_on_storage = std::find(productName.begin(), productName.end(), productName.at(std::distance(on_storage, id_on_storage)));
-            auto price_on_storage = std::find(price.begin(), price.end(), price.at(std::distance(on_storage, id_on_storage)));
-            auto count_on_storage = std::find(count.begin(), count.end(), count.at(std::distance(on_storage, id_on_storage)));
-            productName.erase(product_on_storage);
-            price.erase(price_on_storage);
-            count.erase(count_on_storage);
-            id.erase(id_on_storage);
-            auto find_from = std::find(id.begin(), id.end(), id.at(0));
-            id.emplace_back(id.at(std::distance(find_from, find)));
-            productName.emplace_back(productName.at(std::distance(find_from, find)));
-            price.emplace_back(price.at(std::distance(find_from, find)));
-            count.emplace_back(count.at(std::distance(find_from, find)));
             std::cout << GREEN << "Товар успешно возвращен на склад" << RESET << std::endl;
         }
     }
