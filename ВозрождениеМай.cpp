@@ -196,17 +196,16 @@ void accounts() {
                 auto find_user_login_from_first =
                     std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
                 std::cout << "Введите текущий пароль пользователя '" << user_login << "':\n";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::getline(std::cin, current_password);
+                std::cin >> current_password;
                 auto find_current_password = std::find(passwords.begin(), passwords.end(), current_password);
                 if (find_current_password == passwords.end()) {
                     std::cerr << RED << "Неправильный пароль для пользователя '" << user_login << "'" << RESET << std::endl;
                     accounts();
                 }
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Введите для пользователя '" << user_login << "' новый пароль:\n";
                 std::string new_password = "";
-                std::getline(std::cin, new_password);
-                if (new_password.size() < 5) {
+                std::cin >> new_password;
+                if (new_password.size() < 8) {
                     std::cerr << RED << "Пароль должен быть не менее 5 символов" << RESET << std::endl;
                 }
                 else {
@@ -233,17 +232,15 @@ void accounts() {
                     std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
                 std::cout << "Введите текущий пароль пользователя '" << user_login << "':\n";
                 std::string current_password = "";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::getline(std::cin, current_password);
+                std::cin >> current_password;
                 auto find_current_password = std::find(passwords.begin(), passwords.end(), current_password);
                 if (find_current_password == passwords.end()) {
                     std::cerr << RED << "Неправильный пароль для пользователя '" << user_login << "'" << RESET << std::endl;
                     accounts();
                 }
                 std::cout << "Напишите новое право для пользователя '" << user_login << "':\n";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::string new_right = "";
-                std::getline(std::cin, new_right);
+                std::cin >> new_right;
                 auto exist_right = std::find(rights.begin(), rights.end(), new_right);
                 if (new_right.size() < 5 || exist_right == rights.end()) {
                     std::cerr << RED << "Ошибка ввода нового права для пользователя '" << user_login << "'" << RESET << std::endl;
@@ -263,6 +260,7 @@ void accounts() {
             std::cerr << RED << "Неправильная опция. Попробуйте еще раз" << RESET << std::endl;
             accounts();
         }
+
     }
     else if (rights[std::distance(find_from_first, find_right)] == "Администратор") {
         for (std::size_t i = 0; i < loginNames.size(); ++i) {
@@ -290,18 +288,17 @@ void accounts() {
                 auto find_user_login_from_first =
                     std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
                 std::cout << "Введите текущий пароль пользователя '" << user_login << "':\n";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-                std::getline(std::cin,current_password);
-                auto find_current_password = std::find(passwords.begin(),passwords.end(),current_password);
+                std::cin >> current_password;
+                auto find_current_password = std::find(passwords.begin(), passwords.end(), current_password);
                 if (find_current_password == passwords.end()) {
                     std::cerr << RED << "Неправильный пароль для пользователя '" << user_login << "'" << RESET << std::endl;
                     accounts();
                 }
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+                std::cout << "Введите новый пароль для пользователя '" << user_login << "':\n";
                 std::string new_password = "";
-                std::getline(std::cin,new_password);
-                if (new_password.size() < 5) {
-                    std::cerr << RED << "Пароль должен быть не менее 5 символов" << RESET << std::endl;
+                std::cin >> new_password;
+                if (new_password.size() < 8) {
+                    std::cerr << RED << "Пароль должен быть не менее 8 символов" << RESET << std::endl;
                 }
                 else {
                     if (rights[std::distance(find_user_login_from_first, find_user_login)] == "Администратор") {
@@ -327,17 +324,15 @@ void accounts() {
                     std::find(loginNames.begin(), loginNames.end(), loginNames.at(0));
                 std::cout << "Введите текущий пароль пользователя '" << user_login << "':\n";
                 std::string current_password = "";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::getline(std::cin, current_password);
+                std::cin >> current_password;
                 auto find_current_password = std::find(passwords.begin(), passwords.end(), current_password);
                 if (find_current_password == passwords.end()) {
                     std::cerr << RED << "Неправильный пароль для пользователя '" << user_login << "'" << RESET << std::endl;
                     accounts();
                 }
                 std::cout << "Напишите новое право для пользователя '" << user_login << "':\n";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::string new_right = "";
-                std::getline(std::cin,new_right);
+                std::cin >> new_right;
                 auto exist_right = std::find(rights.begin(), rights.end(), new_right);
                 if (new_right.size() < 5 || exist_right == rights.end()) {
                     std::cerr << RED << "Ошибка ввода нового права для пользователя '" << user_login << "'" << RESET << std::endl;
@@ -666,7 +661,7 @@ void payment(std::string product, double product_price, std::size_t count) {
                     std::cout << "-------------------------------------------\n";
                     std::cout << "666666 г. Екатеринбург ул. Фурманова 57\n";
                     auto date = std::chrono::system_clock::now();
-                    count_sales++; 
+                    count_sales++;
                     if (is_momfriendson == 1) {
                         earned_money = 0.0;
                     }
@@ -714,7 +709,7 @@ void payment(std::string product, double product_price, std::size_t count) {
                 std::cout << "-------------------------------------------\n";
                 std::cout << "666666 г. Екатеринбург ул. Фурманова 57\n";
                 auto date = std::chrono::system_clock::now();
-                count_sales++; 
+                count_sales++;
                 if (is_momfriendson == 1) {
                     earned_money = 0.0;
                 }
@@ -734,7 +729,7 @@ void payment(std::string product, double product_price, std::size_t count) {
     }
 }
 
-void momFriendSon() { 
+void momFriendSon() {
     is_momfriendson = 1;
     std::cout << GREEN << "Режим '" << "Сын маминой подруги" << "' активирован" << RESET << std::endl;
     menu(1);
@@ -917,6 +912,7 @@ void storage() {
             std::cout << LIGHT_BLUE << "Выберите тип списания товара:\n" << RESET;
             std::cout << "1. Уменьшить количество товара\n";
             std::cout << "2. Сделать товар не доступным" << std::endl;
+            std::cout << "3. Вернуться обратно к списку товаров\n";
             std::cin >> select_type;
             if (std::stoi(select_type) < 1 || std::stoi(select_type) > 2) {
                 std::cerr << RED << "Выберите правильный тип списания товара" << RESET << std::endl;
@@ -947,7 +943,7 @@ void storage() {
                     }
                 }
             }
-            else {
+            else if(std::stoi(select_type) == 2) {
                 std::cout << "Напишите id товара:\n";
                 std::cin >> _id;
                 if (std::stoi(_id) < 1 || std::stoi(_id) > id.size()) {
@@ -980,8 +976,17 @@ void storage() {
                     menu(1);
                 }
             }
+            else {
+                storage();
+            }
         }
         else if (std::stoi(operation) == 4) {
+            std::size_t return_to_list = 0;
+            std::cout << "Для возвращения обратно к списку операций напишите 1:\n";
+            std::cin >> return_to_list;
+            if (return_to_list == 1) {
+                storage();
+            }
             std::cout << "Напишите новое id товара: \n";
             std::cin >> _id;
             std::string newNameProduct = "", newCount = "", newPrice = "";
@@ -1012,7 +1017,13 @@ void storage() {
             menu(1);
         }
         else if (std::stoi(operation) == 5) {
-            std::cout << "Напишите  id для товара:\n";
+            std::size_t return_to_list = 0;
+            std::cout << "Для возвращения обратно к списку операций напишите 1:\n";
+            std::cin >> return_to_list;
+            if (return_to_list == 1) {
+                storage();
+            }
+            std::cout << "Напишите id для товара:\n";
             std::cin >> _id;
             auto find_id = std::find(id.begin(), id.end(), std::stoi(_id));
             if (find_id == id.end()) {
@@ -1056,9 +1067,21 @@ void storage() {
         std::string option = "";
         std::cin >> option;
         if (std::stoi(option) == 1) {
+            std::size_t return_to_list = 0;
+            std::cout << "Для возвращения обратно к списку операций напишите 1:\n";
+            std::cin >> return_to_list;
+            if (return_to_list == 1) {
+                storage();
+            }
             sales();
         }
         else if (std::stoi(option) == 2) {
+            std::size_t return_to_list = 0;
+            std::cout << "Для возвращения обратно к списку операций напишите 1:\n";
+            std::cin >> return_to_list;
+            if (return_to_list == 1) {
+                storage();
+            }
             std::cout << "Айди" << "\t" << "Наименование товара" << "\t" << "Цена" << "\t" << "Количество" << std::endl;
             for (std::size_t i = 0; i < 10; ++i) {
                 std::cout << id[i] << "\t" << productName[i] << "\t\t" << price[i] << "\t" << count[i] << std::endl;
@@ -1073,8 +1096,8 @@ void storage() {
                 storage();
             }
             std::cout << "Введите новое название для товара:\n";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-            std::getline(std::cin,new_name);
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::getline(std::cin, new_name);
             if (std::isdigit(new_name.at(0), std::locale(""))) {
                 std::cerr << RED << "Ошибка наименования товара. Повторите попытку" << RESET << std::endl;
                 storage();
@@ -1134,6 +1157,12 @@ void storage() {
             storage();
         }
         else if (std::stoi(option) == 1) {
+            std::size_t return_to_list = 0;
+            std::cout << "Для возвращения обратно к списку операций напишите 1:\n";
+            std::cin >> return_to_list;
+            if (return_to_list == 1) {
+                storage();
+            }
             std::string select_id = "";
             std::cout << "Айди" << "\t" << "Наименование товара" << "\t" << "Цена" << "\t" << "Количество" << std::endl;
             for (std::size_t i = 0; i < productName.size(); ++i) {
@@ -1152,7 +1181,13 @@ void storage() {
                     price[std::distance(find_id_from_first, find_id)]);
             }
         }
-        else if(std::stoi(option) == 2) {
+        else if (std::stoi(option) == 2) {
+            std::size_t return_to_list = 0;
+            std::cout << "Для возвращения обратно к списку операций напишите 1:\n";
+            std::cin >> return_to_list;
+            if (return_to_list == 1) {
+                storage();
+            }
             std::string id_product_for_returning = "";
             std::cout << "Айди" << "\t" << "Наименование товара" << "\t" << "Цена" << "\t" << "Количество" << std::endl;
             for (std::size_t i = 0; i < 10; ++i) {
