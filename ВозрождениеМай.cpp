@@ -720,7 +720,7 @@ void new_storage() {
     std::cin >> set_size;
     if(std::stoi(set_size) <= 0) {
         std::cerr << RED << "Размер склада не может быть нулевым или отрицательным. Попробуйте еще раз" << RESET << std::endl;
-        storage();
+        new_storage();
     }
     std::size_t get_size = std::stoi(set_size);
     while(create < get_size) {
