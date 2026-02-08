@@ -2,6 +2,7 @@
 #define GLOBALOBJECTSANDVARIABLES_H
 #include "ConstantStrings.h"
 #include "Libraries.h"
+#include "GlobalObjectsAndVariables.h"
 
 bool is_mom_friend_son = 0, is_new_storage = 0, is_black_friday = 0, discount_sale = 0;
 
