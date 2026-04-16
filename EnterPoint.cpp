@@ -6,14 +6,11 @@
 #include "MomFriendSon.h"
 #include "PaymentOperations.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 void invalid_error() {
     throw std::invalid_argument("Такой операции не существует");
 }
 
 void menu(short attempt) {
-    Assert::IsTrue(attempt >= 10,L"Было использовано более 10 попыток при выборе опции.");
     std::string option = "";
     std::cout << std::right << std::setw(62) << "Возрождение май\n";
     std::string menu_types[]{ "","Товары","Учетные записи","Продажи","Склад","Сын маминой подруги","Контакты","Выйти со своего аккаунта" };
@@ -48,9 +45,7 @@ void menu(short attempt) {
         login(1);
         break;
     default:
-        Assert::ExpectException<std::invalid_argument>([] {
-            invalid_error();
-        });
+        std::cout << "Нет такой опции" << std::endl;
         break;
     }
 }
