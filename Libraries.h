@@ -10,5 +10,4 @@
 #include <sstream>
 #include <locale>
 #include <string>
-#include "CppUnitTest.h"
 #endif // LIBRARIES_H
